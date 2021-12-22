@@ -1,12 +1,211 @@
---[[ 
+getgenv().SilentAimbotKey = 'b'; getgenv().AimlockKey = 'q';  _G.WEBHOOK_URL = '';
 
-PASTESLAYER
-    $$$
-    
--- Expose thread: https://v3rmillion.net/showthread.php?tid=1144517
-]]--
+_G.PART = "UpperTorso"
+_G.PART2 = "UpperTorso"
+_G.PRED = 0.037
+_G.Frame = Vector3.new(0,0.53,0)
+_G.AIR = 0.000005
+_G.SHIT = 1
 
-local LoaderTitle = "kitten legit (getting removed soon)"
+local CC = game:GetService "Workspace".CurrentCamera
+local Plr
+local enabled = false
+local accomidationfactor = nil
+local mouse = game.Players.LocalPlayer:GetMouse()
+local placemarker = Instance.new("Part", game.Workspace)
+local guimain = Instance.new("Folder", game.CoreGui)
+
+getgenv().makemarker = function(Parent, Adornee, Color, Size, Size2)
+	local e = Instance.new("BillboardGui", Parent)
+	e.Name = "epicgamershits"
+	e.Adornee = Adornee
+	e.Size = UDim2.new(Size, Size2, Size, Size2)
+	e.AlwaysOnTop = true
+	local a = Instance.new("Frame", e)
+	a.Size = UDim2.new(4, 0, 4, 0)
+	a.BackgroundTransparency = 1
+	a.BackgroundColor3 = Color
+	local g = Instance.new("UICorner", a)
+	g.CornerRadius = UDim.new(50, 50)
+	return (e)
+end
+
+local data = game.Players:GetPlayers()
+function noob(player)
+	local character
+	repeat
+		wait()
+	until player.Character
+	local handler = makemarker(guimain, player.Character:WaitForChild(_G.PART), Color3.fromRGB(255, 255, 255), 0.0, 0)
+	handler.Name = player.Name
+	player.CharacterAdded:connect(
+		function(Char)
+			handler.Adornee = Char:WaitForChild(_G.PART)
+		end
+	)
+
+	local TextLabel = Instance.new("TextLabel", handler)
+	TextLabel.BackgroundTransparency = 1
+	TextLabel.Position = UDim2.new(0, 0, 0, -50)
+	TextLabel.Size = UDim2.new(0, 100, 0, 100)
+	TextLabel.Font = Enum.Font.SourceSansSemibold
+	TextLabel.TextSize = 14
+	TextLabel.TextColor3 = Color3.new(1, 1, 1)
+	TextLabel.TextStrokeTransparency = 0
+	TextLabel.TextYAlignment = Enum.TextYAlignment.Bottom
+	TextLabel.Text = "Name: " .. player.Name
+	TextLabel.ZIndex = 10
+
+end
+
+for i = 1, #data do
+	if data[i] ~= game.Players.LocalPlayer then
+		noob(data[i])
+	end
+end
+
+game.Players.PlayerAdded:connect(
+	function(Player)
+		noob(Player)
+	end
+)
+
+game.Players.PlayerRemoving:Connect(
+	function(player)
+		guimain[player.Name]:Destroy()
+	end
+)
+
+spawn(
+	function()
+		placemarker.Anchored = true
+		placemarker.CanCollide = false
+		placemarker.Size = Vector3.new(0.1, 0.1, 0.1)
+		placemarker.Transparency = _G.SHIT
+		makemarker(placemarker, placemarker, Color3.fromRGB(255, 255, 255), 0.20, 0)
+	end
+)
+
+getgenv().Targett = ""
+
+mouse.KeyDown:Connect(
+	function(k)
+		if k ~= getgenv().SilentAimbotKey then
+			return
+		end
+		if enabled then
+			-- guimain[Plr.Name].Frame.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+			enabled = false
+			if getgenv().NotifMode == true then
+
+				game.StarterGui:SetCore(
+					"SendNotification",
+					{
+						Title = "Happy Aiden Hecker Mode",
+						Text = "Disabled",
+						Icon = "http://www.roblox.com/asset/?id=7157807693",
+						Duration = 1,
+						Button1 = "",
+						Callback = NotificationBindable
+					}
+				)
+
+			end
+
+			if getgenv().CopyMode == true then
+
+				setclipboard("")
+
+			end
+
+			if getgenv().Webhookmode == true then 
+
+				sendMessage("Wow you unlocked -- aiden and happy was here nigeros")
+
+			end
+			-- TextLabel.TextColor3 = Color3.fromRGB(255, 20, 75)
+			-- TextLabel.Text = "------"
+		else
+			--guimain[Plr.Name].Frame.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+			enabled = true
+			Plr = GetNearestTarget()
+
+			if getgenv().NotifMode == true then
+
+				game.StarterGui:SetCore(
+					"SendNotification",
+					{
+						Title = "Happy Aiden Hecker Mode",
+						Text = "Locked on "..Plr.DisplayName.." Aka "..Plr.Name,
+						Icon = "http://www.roblox.com/asset/?id=7157807693",
+						Duration = 1,
+						Button1 = "",
+						Callback = NotificationBindable
+					}
+				)
+
+			end
+
+			if getgenv().CopyMode == true then
+
+				setclipboard("Locked on "..Plr.DisplayName.." Aka "..Plr.Name)
+
+			end
+
+			if getgenv().Webhookmode == true then 
+
+				sendMessage("Locked on "..Plr.DisplayName.." Aka "..Plr.Name)
+
+			end
+
+			-- TextLabel.TextColor3 = Color3.fromRGB(12, 255, 0)
+			-- TextLabel.Text = Plr.Character.Humanoid.DisplayName
+		end
+	end)
+
+game:GetService "RunService".Stepped:connect(
+	function()
+		if getgenv().SilentAimbot == true and enabled and Plr.Character and Plr.Character:FindFirstChild(_G.PART) then
+			placemarker.CFrame =
+				CFrame.new(Plr.Character[_G.PART].Position + _G.Frame + (Plr.Character[_G.PART].Velocity * accomidationfactor))
+		else
+			placemarker.CFrame = CFrame.new(0, 9999, 0)
+		end
+	end
+)
+
+local mt = getrawmetatable(game)
+local old = mt.__namecall
+
+setreadonly(mt, false)
+mt.__namecall =
+	newcclosure(
+	function(...)
+		local args = {...}
+		if getgenv().SilentAimbot == true and enabled and getnamecallmethod() == "FireServer" and args[2] == "UpdateMousePos" then
+			args[3] = Plr.Character[_G.PART].Position+ _G.Frame + (Plr.Character[_G.PART].Velocity * accomidationfactor)
+			return old(unpack(args))
+		end
+		return old(...)
+	end
+)
+
+
+
+
+-- edit here
+
+
+--// TOGGLES
+
+--// RAGEBOT
+
+
+--// variables etc
+
+
+
+    local LoaderTitle = "kittenassist.me revamped"
 
     local TweenService = game:GetService("TweenService")
 
@@ -438,9 +637,11 @@ local LoaderTitle = "kitten legit (getting removed soon)"
     repeat
         wait()
     until LoadedPressed == true
+    
+    game.Players.LocalPlayer.Character.HumanoidRootPart.Anchored = false
 
     getgenv().AimPart = "HumanoidRootPart" -- For R15 Games: {UpperTorso, LowerTorso, HumanoidRootPart, Head} | For R6 Games: {Head, Torso, HumanoidRootPart}
-	getgenv().AimlockKey = "q"
+	
 	getgenv().AimRadius = 30 -- How far away from someones character you want to lock on at
 	getgenv().ThirdPerson = true 
 	getgenv().FirstPerson = true
@@ -450,6 +651,9 @@ local LoaderTitle = "kitten legit (getting removed soon)"
 	getgenv().OldAimPart = "HumanoidRootPart"
 	getgenv().CheckIfJumped = true
 	getgenv().Multiplier = -0.27
+
+	getgenv().SpinBotSpeed = 20
+	getgenv().FakeLagSpeed = 0.000001
 
 local ui_options = {
 	main_color = Color3.fromRGB(41, 74, 122),
@@ -2517,11 +2721,61 @@ do
 
     --// TABS
 	local rageBot = IMGUIWindow:AddTab("Rage Cheats")
+	local silentAimbotTab = IMGUIWindow:AddTab("Silent Aimbot")
 	local aimlockTab = IMGUIWindow:AddTab("Aimlock")
 	local espTab = IMGUIWindow:AddTab("Esp")
 	local miscTab = IMGUIWindow:AddTab("Misc")
 	local anotherTab = IMGUIWindow:AddTab("Important")
+
+	local HttpService = game:GetService("HttpService")
+    local webhook_url = _G.WEBHOOK_URL
+    local options = http_request or syn.request or request
+    function sendMessage(msg)
+        local payload = {
+            ["content"] = msg
+        }
+        local headers = {
+            ["content-type"] = "application/json"
+        }
+
+        local request_body_encoded = HttpService:JSONEncode(payload)
+        local request_payload = {Url = webhook_url, Body = request_body_encoded, Method = "POST", Headers = headers}
+        options(request_payload)
+    end
+
 	do
+
+		local silenabled = silentAimbotTab:AddSwitch("Auto Settings and Silent Aim",function(state)
+
+			getgenv().SilentAimbot = state
+		
+		end)
+
+		local silenabled2 = silentAimbotTab:AddSwitch("Hit Every Airshots (MIGHT BE LAGGY)",function(state)
+
+			getgenv().AirshotSilent = state
+		
+		end)
+
+		local silenabled2 = silentAimbotTab:AddSwitch("Webhook Mode",function(state)
+
+			getgenv().Webhookmode = state
+		
+		end)
+
+		local silenabled3 = silentAimbotTab:AddSwitch("Notification Mode",function(state)
+
+			getgenv().NotifMode = state
+		
+		end)
+
+		local silenabled4 = silentAimbotTab:AddSwitch("Copy Mode",function(state)
+
+			getgenv().CopyMode = state
+		
+		end)
+
+		silentAimbotTab:AddLabel("Gamer Things")
 
         --// LABELS
 		anotherTab:AddLabel("Credits")
@@ -2539,14 +2793,16 @@ do
         repeat wait() until game:IsLoaded()
 
         getgenv().Aimlock = false
+		getgenv().SilentAimbot = false
+		getgenv().Webhookmode = false
+		getgenv().NotifMode = false
+		getgenv().CopyMode = false
 
         local Players, Uis, RService, SGui = game:GetService"Players", game:GetService"UserInputService", game:GetService"RunService", game:GetService"StarterGui";
         local Client, Mouse, Camera, CF, RNew, Vec3, Vec2 = Players.LocalPlayer, Players.LocalPlayer:GetMouse(), workspace.CurrentCamera, CFrame.new, Ray.new, Vector3.new, Vector2.new;
         local MousePressed, CanNotify = false, false;
         local AimlockTarget;
         local OldPre;
-
-        getgenv().CiazwareUniversalAimbotLoaded = true
 
         getgenv().WorldToViewportPoint = function(P)
             return Camera:WorldToViewportPoint(P)
@@ -2638,6 +2894,34 @@ do
             end
         end)
         RService.RenderStepped:Connect(function()
+
+			if getgenv().SilentAimbot == true and enabled then
+
+            local ping = game:GetService("Stats").Network.ServerStatsItem["Data Ping"]:GetValueString()
+            local Value = tostring(ping)
+            local pingValue = Value:split(" ")
+            local PingNumber = pingValue[1]
+            
+            accomidationfactor = PingNumber / 1000 + _G.PRED
+
+			end
+
+			if getgenv().AirshotSilent == true and enabled then
+
+            if Plr.Character.Humanoid.Jump == true and Plr.Character.Humanoid.FloorMaterial == Enum.Material.Air then
+                _G.PART = "RightFoot"
+            else
+                Plr.Character:WaitForChild("Humanoid").StateChanged:Connect(function(old,new)
+                    if new == Enum.HumanoidStateType.Freefall then
+                    _G.PART = "RightFoot"
+                    else
+                        _G.PART = _G.PART2
+                    end
+                end)
+            end
+		end
+
+
 			local AimPartOld = getgenv().OldAimPart
             if getgenv().ThirdPerson == true and getgenv().FirstPerson == true then 
                 if (Camera.Focus.p - Camera.CoordinateFrame.p).Magnitude > 1 or (Camera.Focus.p - Camera.CoordinateFrame.p).Magnitude <= 1 then 
@@ -2686,6 +2970,7 @@ do
                     getgenv().AimPart = AimPartOld
                 end
             end
+
         end)
 
 	    local aimlockEnable = aimlockTab:AddSwitch("Aimlock", function(state)
@@ -2698,7 +2983,7 @@ do
 
         aimlockTab:AddTextBox("Prediction", function(a)
 		
-            getgenv().PredictionVelocity = tostring(a)
+            getgenv().PredictionVelocity = tonumber(a)
 		
 		end, {
 			["clear"] = false,
@@ -2712,9 +2997,37 @@ do
 			["clear"] = false,
 		})
 
+
+		
+
+		-- edit here
+
+
         --// TOGGLES
 
 		--// RAGEBOT
+
+		--[[
+		while wait() do 
+			local ping = game:GetService("Stats").Network.ServerStatsItem["Data Ping"]:GetValueString()
+			local Value = tostring(ping)
+			local pingValue = Value:split(" ")
+			local PingNumber = pingValue[1]
+			
+			accomidationfactor = PingNumber / 1000 + _G.PRED
+			if GetNearestTarget().Character.Humanoid.Jump == true and AimlockTarget.Character.Humanoid.FloorMaterial == Enum.Material.Air then
+				_G.PART = "RightFoot"
+			else
+				GetNearestTarget().Character:WaitForChild("Humanoid").StateChanged:Connect(function(old,new)
+					if new == Enum.HumanoidStateType.Freefall then
+					_G.PART = "RightFoot"
+					else
+						_G.PART = _G.PART2
+					end
+				end)
+			end
+		end
+		]]
 
 		rageBot:AddLabel("Things might be glitchy it's in beta")
 
@@ -2739,8 +3052,60 @@ do
 			end
 		end)
 
+		rageBot:AddTextBox("Spin Bot Speed", function(a)
 		
+            getgenv().SpinBotSpeed = tonumber(a)
 		
+		end, {
+			["clear"] = false,
+		})
+
+		local spinbotEnable = rageBot:AddSwitch("Spin Bot", function(state)
+
+			function getRoot(char)
+				local rootPart = char:FindFirstChild('HumanoidRootPart') or char:FindFirstChild('UpperTorso')
+				return rootPart
+			end
+
+			if state == true then
+				local Spin = Instance.new("BodyAngularVelocity")
+				Spin.Name = "Spinning"
+				Spin.Parent = getRoot(game.Players.LocalPlayer.Character)
+				Spin.MaxTorque = Vector3.new(0, math.huge, 0)
+				Spin.AngularVelocity = Vector3.new(0,getgenv().SpinBotSpeed,0)
+			else
+				for i,v in pairs(getRoot(game.Players.LocalPlayer.Character):GetChildren()) do
+					if v.Name == "Spinning" then
+						v:Destroy()
+					end
+				end
+			end
+		end)
+		
+		rageBot:AddTextBox("Fake Lag Speed", function(a)
+		
+            getgenv().FakeLagSpeed = tonumber(a)
+		
+		end, {
+			["clear"] = false,
+		})
+		
+		local fakelagEnable = rageBot:AddSwitch("Fake Lag", function(state)
+             _G.fakelagEnableState = false
+            local Player = game:GetService("Players").LocalPlayer
+			local runService = game:service('RunService')
+			if state == true then
+			    _G.fakelagEnableState = true
+			    while _G.fakelagEnableState == true do
+			       Player.Character.HumanoidRootPart.Anchored = true
+			       wait(getgenv().FakeLagSpeed)
+			       Player.Character.HumanoidRootPart.Anchored = false
+			       wait()
+			    end
+			else
+			    _G.fakelagEnableState = false
+			end
+		end)
 
 		local espEnable = espTab:AddSwitch("Enable ESP", function(onoff)
 
@@ -2856,7 +3221,6 @@ do
 				if Key == "x" then
 					SpeedGlitch = not SpeedGlitch
 					if SpeedGlitch == true then
-						stopTracks()
 						loadAnimation("rbxassetid://3189777795")
 						wait(1.5)
 						Wallet.Parent = Player.Character
@@ -2910,7 +3274,20 @@ do
 		bodySelect:Add("HumanoidRootPart")
 		bodySelect:Add("LowerTorso")
 
+		local bodySelect2 = silentAimbotTab:AddDropdown("Bodypart", function(objective)
+
+			_G.PART = objective
+			_G.PART2 = objective
+		
+		end)
+
+		bodySelect2:Add("Head")
+		bodySelect2:Add("UpperTorso")
+		bodySelect2:Add("HumanoidRootPart")
+		bodySelect2:Add("LowerTorso")
+
     --// DISABLE ENABLE TOGGLES
+
 		aimbotEnableSwitch:Set(false)
 		crewCheckSwitch:Set(false)
 
@@ -2920,23 +3297,36 @@ do
 		boxesEnable:Set(false)
 
 
+		--// DISABLE ENABLE TOGGLES
+		aimbotEnableSwitch:Set(false)
+		crewCheckSwitch:Set(false)
+
+		espEnable:Set(false)
+		silenabled:Set(false)
+		silenabled2:Set(false)
+		silenabled3:Set(false)
+		silenabled4:Set(false)
+		tracersEnable:Set(false)
+		namesEnable:Set(false)
+		boxesEnable:Set(false)
+
+
 	end
+
+
+end
 
 
     -- // LAUNCH TABS
     
 	aimlockTab:Show()
 	espTab:Show()
+	silentAimbotTab:Show()
+	rageBot:Show()
 	anotherTab:Show()
 	library:FormatWindows()
 
 		--  game:GetService("RunService").RenderStepped:wait()
-	
-
-end
-
---// variables etc
-
 local aimbotEnabled = false
 local smoothness = false
 local aimbotTarg = nil
